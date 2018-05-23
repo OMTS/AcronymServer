@@ -7,9 +7,22 @@ public func routes(_ router: Router) throws {
         return "Hello, world!"
     }
 
-    // Example of configuring a controller
-    let todoController = TodoController()
-    router.get("todos", use: todoController.index)
-    router.post("todos", use: todoController.create)
-    router.delete("todos", Todo.parameter, use: todoController.delete)
+  /*  router.get("acronyms") { req -> Future<[Acronym]> in
+        let result = req.withConnection(to: SQLiteDatabase) { db in
+            // use the db here
+        }
+    }*/
+
+    router.post("api", "acronyms") { req -> Future<Acronym> in
+        let decededAcronym = try req.content.decode(Acronym.self)
+        return decededAcronym.flatMap { acronym  in
+            //The next line (mutating the acronym)
+            //won't be allowed if we used a struct for Acronym
+            //Instead we would have to make a fresh copy of the acronym
+            //in order to mutate it
+            
+            //acronym.short = "OMG"
+            return acronym.save(on: req)
+        }
+    }
 }
