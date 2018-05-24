@@ -1,3 +1,14 @@
+# API Usage (in memory db)
+
+```
+curl -X "POST" "https://omts-til.vapor.cloud/api/acronyms" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{
+  "short": "LOL",
+  "long": "Laughing Out Loud"
+}'
+```
+
 <p align="center">
     <img src="https://user-images.githubusercontent.com/1342803/36623515-7293b4ec-18d3-11e8-85ab-4e2f8fb38fbd.png" width="320" alt="API Template">
     <br>
