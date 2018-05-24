@@ -4,7 +4,7 @@ import Vapor
 public func routes(_ router: Router) throws {
     // Basic "Hello, world!" example
     router.get("hello") { req in
-        return "Hello, world!"
+        return "Hello, world Staging!"
     }
 
   /*  router.get("acronyms") { req -> Future<[Acronym]> in
@@ -20,7 +20,7 @@ public func routes(_ router: Router) throws {
             //won't be allowed if we used a struct for Acronym
             //Instead we would have to make a fresh copy of the acronym
             //in order to mutate it
-            
+
             //acronym.short = "OMG"
             return acronym.save(on: req)
         }
