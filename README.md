@@ -1,12 +1,85 @@
-# API Usage (in memory db)
+# API Usage
 
+## GET Hello
 ```
-curl -X "POST" "https://omts-til.vapor.cloud/api/acronyms" \
+curl "https://omts-til-staging.vapor.cloud/hello" \
      -H 'Content-Type: application/json; charset=utf-8' \
      -d $'{
-  "short": "LOL",
-  "long": "Laughing Out Loud"
+  "short": "OMG",
+  "long": "Oh my god"
 }'
+```
+
+## POST Acronyms
+```
+curl -X "POST" "https://omts-til-staging.vapor.cloud/api/acronyms" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{
+  "short": "OMG",
+  "long": "Oh my god"
+}'
+```
+
+## GET Acronyms
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{}'
+```
+## GET Acronym with ID
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms/7" \
+    -H 'Content-Type: application/json; charset=utf-8' \
+    -d $'{}'
+```
+
+## PUT Acronym with ID
+```
+curl -X "PUT" "https://omts-til-staging.vapor.cloud/api/acronyms/6" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{
+  "short": "BOB",
+  "long": "It'"'"'s Robert Actually!"
+}'
+```
+
+## DELETE Acronym with ID
+```
+curl -X "DELETE" "https://omts-til-staging.vapor.cloud/api/acronyms/6"
+```
+
+## SEARCH Acronym short
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms/search?term=BOB" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{}'
+```
+
+## SEARCH Acronym short and long
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms/multiplesearch?term=It%27s%20Robert%20Actually%21" \
+      -H 'Content-Type: application/json; charset=utf-8' \
+      -d $'{}'
+```
+
+## FIRST Acronym
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms/first" \
+      -H 'Content-Type: application/json; charset=utf-8' \
+      -d $'{}'
+```
+## Sorted Acronyms
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms/sorted" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{}'
+```
+## GET Acronyms with sorted param
+
+```
+curl "https://omts-til-staging.vapor.cloud/api/acronyms?sorted=true" \
+    -H 'Content-Type: application/json; charset=utf-8' \
+    -d $'{}'
 ```
 
 <p align="center">
