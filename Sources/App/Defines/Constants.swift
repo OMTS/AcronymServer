@@ -13,5 +13,7 @@ struct Constants {
         static let dsearch = "dsearch"
         static let first = "first"
         static let sorted = "sorted"
+        static let user = "user"
+        static let acronyms = "acronyms"
     }
 }
