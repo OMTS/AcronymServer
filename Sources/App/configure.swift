@@ -21,20 +21,24 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     /// Register the configured SQLite database to the database config.
     var databases = DatabasesConfig()
-    let hostname = Environment.get("DATABASE_HOSTNAME")
-        ?? "localhost"
-    let username = Environment.get("DATABASE_USER") ?? "vapor"
-    let databaseName = Environment.get("DATABASE_DB") ?? "vapor"
-    let password = Environment.get("DATABASE_PASSWORD")
-        ?? "password"
-    let port = hostname == "localhost" ? 5435 : 5432
-    let databaseConfig = PostgreSQLDatabaseConfig(
-        hostname: hostname,
-        port: port,
-        username: username,
-        database: databaseName,
-        password: password)
-    let database = PostgreSQLDatabase(config: databaseConfig)
+
+    var databaseConfig: PostgreSQLDatabaseConfig?
+    if let databaseURL = Environment.get("DATABASE_URL") {
+        databaseConfig = try PostgreSQLDatabaseConfig(url: databaseURL)
+    } else {
+        let hostname = "localhost"
+        let username = "vapor"
+        let databaseName = "vapor"
+        let password = "password"
+        let port = 5435
+        databaseConfig = PostgreSQLDatabaseConfig(
+            hostname: hostname,
+            port: port,
+            username: username,
+            database: databaseName,
+            password: password)
+    }
+    let database = PostgreSQLDatabase(config: databaseConfig!) //crash early if database config is nil
     databases.add(database: database, as: .psql)
     services.register(databases)
 
