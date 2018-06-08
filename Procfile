@@ -1,2 +1,1 @@
-web: Run --env=staging --workdir="./"
-web: Run --env=staging --workdir=./ --config:servers.default.port=$PORT --config:postgresql.url=$DATABASE_URL
+web: Run serve --port $PORT --hostname 0.0.0.0
