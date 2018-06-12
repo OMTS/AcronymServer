@@ -9,6 +9,7 @@ struct UsersController: RouteCollection {
         userRoutes.post(User.self, use: createHandler)
 
         userRoutes.get(User.parameter, Constants.Routes.acronyms, use: getAcronymsHandler)
+        
     }
 
     private func getAllHandler(_ req: Request) throws -> Future<[User]> {
