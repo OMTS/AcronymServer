@@ -26,11 +26,19 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     if let databaseURL = Environment.get("DATABASE_URL") {
         databaseConfig = try PostgreSQLDatabaseConfig(url: databaseURL)
     } else {
+        let databaseName: String
+        let port: Int
+
+        if (env == .testing) {
+            databaseName = "vapor-test"
+            port = 5437
+        } else {
+            databaseName = "vapor"
+            port = 5436
+        }
         let hostname = "localhost"
         let username = "vapor"
-        let databaseName = "vapor"
         let password = "password"
-        let port = 5436
         databaseConfig = PostgreSQLDatabaseConfig(
             hostname: hostname,
             port: port,
@@ -52,4 +60,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     services.register(migrations)
 
+    var commandConfig = CommandConfig.default()
+    commandConfig.use(RevertCommand.self, as: "revert")
+    services.register(commandConfig)
 }
