@@ -6,9 +6,11 @@ struct WebsiteController: RouteCollection {
     func boot(router: Router) throws {
         router.get(use: indexHandler)
         router.get("acronyms", Acronym.parameter, use: acronymHandler)
+        router.get("users", User.parameter, use: userHandler)
+        router.get("users", use: allUsersHandler)
     }
 
-    func indexHandler(_ req: Request) throws -> Future<View> {
+    private func indexHandler(_ req: Request) throws -> Future<View> {
         return Acronym.query(on: req)
             .all()
             .flatMap(to: View.self) { acronyms in
@@ -18,7 +20,16 @@ struct WebsiteController: RouteCollection {
         }
     }
 
-    func acronymHandler(_ req: Request) throws -> Future<View> {
+    private func allUsersHandler(_ req: Request) throws -> Future<View> {
+        return User.query(on: req)
+        .all()
+            .flatMap(to: View.self) { users in
+                let context = AllUsersContext(title: "Users", users: users)
+                return try req.view().render("allUsers", context)
+        }
+    }
+
+    private func acronymHandler(_ req: Request) throws -> Future<View> {
         return try req.parameters.next(Acronym.self)
             .flatMap(to: View.self) { acronym in
                 return try acronym.user
@@ -27,6 +38,19 @@ struct WebsiteController: RouteCollection {
                         let context = AcronymContext(title: acronym.short, acronym: acronym, user: user)
                         return try req.view().render("acronym", context)
                 } }
+    }
+
+
+    private func userHandler(_ req: Request) throws -> Future<View> {
+        return try req.parameters.next(User.self).flatMap(to: View.self) { user in
+            return try user.acronyms.query(on: req).all().flatMap { acronyms in
+
+                let context = UserContext(title: user.name,
+                                          user: user,
+                                          acronyms: acronyms)
+                return try req.view().render("user", context)
+            }
+        }
     }
 }
 
@@ -39,4 +63,15 @@ struct AcronymContext: Encodable {
     let title: String
     let acronym: Acronym
     let user: User
+}
+
+struct UserContext: Encodable {
+    let title: String
+    let user: User
+    let acronyms: [Acronym]
+}
+
+struct AllUsersContext: Encodable {
+    let title: String
+    let users: [User]
 }
