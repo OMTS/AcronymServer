@@ -26,22 +26,27 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     if let databaseURL = Environment.get("DATABASE_URL") {
         databaseConfig = try PostgreSQLDatabaseConfig(url: databaseURL)
     } else {
-        let databaseName: String
-        let port: Int
+        let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
+        let username = Environment.get("DATABASE_USER") ?? "vapor"
+        let password = Environment.get("DATABASE_PASSWORD") ?? "password"
 
+        let databaseName: String
+        let databasePort: Int
         if (env == .testing) {
             databaseName = "vapor-test"
-            port = 5437
-        } else {
-            databaseName = "vapor"
-            port = 5436
+            if let testPort = Environment.get("DATABASE_PORT") {
+                databasePort = Int(testPort) ?? 5437
+            } else {
+                databasePort = 5437
+            }
         }
-        let hostname = "localhost"
-        let username = "vapor"
-        let password = "password"
+        else {
+            databaseName = Environment.get("DATABASE_DB") ?? "vapor"
+            databasePort = 5436
+        }
         databaseConfig = PostgreSQLDatabaseConfig(
             hostname: hostname,
-            port: port,
+            port: databasePort,
             username: username,
             database: databaseName,
             password: password)
@@ -57,7 +62,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: Acronym.self, database: .psql)
     migrations.add(model: Category.self, database: .psql)
     migrations.add(model: AcronymCategoryPivot.self, database: .psql)
-
     services.register(migrations)
 
     var commandConfig = CommandConfig.default()
