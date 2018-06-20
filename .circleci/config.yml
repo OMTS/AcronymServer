@@ -9,7 +9,7 @@ jobs:
     environment:
       POSTGRES_DB: circle_test
       POSTGRES_USER: root
-      POSTGRES_PASSWORD: 
+      POSTGRES_PASSWORD:
       DATABASE_PORT: 5432
 
     steps:
