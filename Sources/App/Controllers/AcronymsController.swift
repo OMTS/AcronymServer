@@ -117,8 +117,8 @@ struct AcronymsController: RouteCollection {
     //Category handlers
     private func addCategoriesHandler(_ req: Request) throws -> Future<HTTPStatus> {
         return try flatMap(to: HTTPStatus.self, req.parameters.next(Acronym.self), req.parameters.next(Category.self)) { acronym, category in
-                            let pivot = try AcronymCategoryPivot(acronym.requireID(), category.requireID())
-                            return pivot.save(on: req).transform(to: .created)
+                let pivot = try AcronymCategoryPivot(acronym.requireID(), category.requireID())
+                return pivot.save(on: req).transform(to: .created)
         }
     }
 

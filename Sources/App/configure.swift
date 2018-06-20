@@ -44,7 +44,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
         }
         else {
             databaseName = Environment.get("DATABASE_DB") ?? "vapor"
-            databasePort = 5436
+            databasePort = 5432
         }
         databaseConfig = PostgreSQLDatabaseConfig(
             hostname: hostname,
