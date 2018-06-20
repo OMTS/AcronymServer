@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  tests:
+  build:
     docker:
       - image: swift:4.1
       - image: circleci/postgres:9.5
