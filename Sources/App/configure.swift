@@ -37,7 +37,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
         if (env == .testing) {
             databaseName = Environment.get("POSTGRES_DB") ?? "vapor-test"
             username = Environment.get("POSTGRES_USER") ?? "vapor"
-            password = Environment.get("POSTGRES_PASSWORD") ?? "password"
+            password = Environment.get("POSTGRES_PASSWORD") ?? ""
 
             if let testPort = Environment.get("DATABASE_PORT") {
                 databasePort = Int(testPort) ?? 5433
