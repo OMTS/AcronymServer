@@ -20,3 +20,9 @@ jobs:
           command: swift test
           environment:
             DATABASE_URL: postgresql://root@127.0.0.1:5432/circle_test
+
+deployment:
+  staging:
+    branch: staging
+    heroku:
+      appname: guarded-harbor-26892
