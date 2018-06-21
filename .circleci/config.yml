@@ -6,11 +6,6 @@ jobs:
       - image: swift:4.1
       - image: circleci/postgres:9.5
 
-    environment:
-      POSTGRES_DB: vapor-ci
-      POSTGRES_USER: vapor-ci-user
-      POSTGRES_PASSWORD: vapor-ci-password
-
     steps:
       - checkout
       - run:
@@ -20,7 +15,4 @@ jobs:
           name: Run unit tests
           command: swift test
           environment:
-            DATABASE_DB: vapor-ci
-            DATABASE_USER: vapor-ci-user
-            DATABASE_PASSWORD: vapor-ci-password
-            DATABASE_PORT: 5432
+            DATABASE_URL: postgresql://root@localhost/circle_test
