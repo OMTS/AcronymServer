@@ -24,8 +24,11 @@ jobs:
   deploy_staging:
 
     branches:
-      only:
-        - staging
+        only:
+          - staging
+
+    docker:
+      - image: vapor/toolbox:latest
 
     steps:
       - checkout
