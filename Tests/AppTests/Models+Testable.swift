@@ -7,7 +7,7 @@ extension User {
         username: String = "lukes",
         on connection: PostgreSQLConnection
         ) throws -> User {
-        let user = User(name: name, username: username)
+        let user = User(name: name, username: username, password: "test")
         return try user.save(on: connection).wait()
     }
 }

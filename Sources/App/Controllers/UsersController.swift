@@ -1,5 +1,6 @@
 import Vapor
 import Fluent
+import Crypto
 
 struct UsersController: RouteCollection {
     func boot(router: Router) throws {
@@ -14,21 +15,22 @@ struct UsersController: RouteCollection {
         
     }
 
-    private func getAllHandler(_ req: Request) throws -> Future<[User]> {
+    private func getAllHandler(_ req: Request) throws -> Future<[User.Public]> {
         if let sorted = req.query[String.self, at:"sorted"] {
             if sorted == "true" {
-                return try User.query(on: req).sort(\.name, .ascending).all()
+                return User.query(on: req).decode(User.Public.self).sort(\.name, .ascending).all()
             }
         }
-        return User.query(on: req).all()
+        return User.query(on: req).decode(User.Public.self).all()
     }
 
-    private func getHandler(_ req: Request) throws -> Future<User> {
-        return try req.parameters.next(User.self)
+    private func getHandler(_ req: Request) throws -> Future<User.Public> {
+        return try req.parameters.next(User.self).convertToPublic()
     }
 
-    private func createHandler(_ req: Request, user: User) throws -> Future<User> {
-        return user.save(on: req)
+    private func createHandler(_ req: Request, user: User) throws -> Future<User.Public> {
+        user.password = try BCrypt.hash(user.password)
+        return user.save(on: req).convertToPublic()
     }
 
     private func getAcronymsHandler(_ req: Request) throws -> Future<[Acronym]> {
