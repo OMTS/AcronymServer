@@ -1,5 +1,0 @@
-deployment:
-  staging:
-    branch: staging
-    heroku:
-      appname: guarded-harbor-26892
