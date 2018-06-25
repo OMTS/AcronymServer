@@ -1,0 +1,22 @@
+version: 2
+
+jobs:
+  build:
+    branches:
+      only:
+        - staging
+
+    docker:
+      - image: swift:4.1
+      - image: circleci/postgres:9.5
+
+    steps:
+      - checkout
+      - run:
+          name: Compile code
+          command: swift build
+      - run:
+          name: Run unit tests
+          command: swift test
+          environment:
+            DATABASE_URL: postgresql://root@127.0.0.1:5432/circle_test

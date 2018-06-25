@@ -6,9 +6,12 @@ struct UsersController: RouteCollection {
         let userRoutes = router.grouped("api", "users")
 
         userRoutes.get(use: getAllHandler)
+        userRoutes.get(User.parameter, use: getHandler)
+
         userRoutes.post(User.self, use: createHandler)
 
         userRoutes.get(User.parameter, Constants.Routes.acronyms, use: getAcronymsHandler)
+        
     }
 
     private func getAllHandler(_ req: Request) throws -> Future<[User]> {
@@ -18,6 +21,10 @@ struct UsersController: RouteCollection {
             }
         }
         return User.query(on: req).all()
+    }
+
+    private func getHandler(_ req: Request) throws -> Future<User> {
+        return try req.parameters.next(User.self)
     }
 
     private func createHandler(_ req: Request, user: User) throws -> Future<User> {
