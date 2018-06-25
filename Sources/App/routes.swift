@@ -6,7 +6,7 @@ public func routes(_ router: Router) throws {
 
     // Basic "Hello, world!" example
     router.get("hello") { req in
-        return "Hello Staging!"
+        return "Hello Staging Démo!"
     }
 
     let acronymsController = AcronymsController()
