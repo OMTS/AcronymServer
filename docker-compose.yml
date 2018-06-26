@@ -7,8 +7,12 @@ services:
     environment:
       - DATABASE_HOSTNAME=postgres
       - DATABASE_PORT=5432
+    ports:
+      - "8080:8080"
   postgres:
     image: "postgres"
+    ports:
+      - "5437:5432"
     environment:
       - POSTGRES_DB=vapor-test
       - POSTGRES_USER=vapor
