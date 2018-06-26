@@ -12,7 +12,10 @@ struct UsersController: RouteCollection {
         userRoutes.post(User.self, use: createHandler)
 
         userRoutes.get(User.parameter, Constants.Routes.acronyms, use: getAcronymsHandler)
-        
+
+        let basicAuthMiddleware = User.basicAuthMiddleware(using: BCryptDigest())
+        let basicAuthGroup = userRoutes.grouped(basicAuthMiddleware)
+        basicAuthGroup.post("login", use: loginHandler)
     }
 
     private func getAllHandler(_ req: Request) throws -> Future<[User.Public]> {
@@ -38,5 +41,11 @@ struct UsersController: RouteCollection {
             .flatMap(to: [Acronym].self) { user in
                 return try user.acronyms.query(on: req).all()
         }
+    }
+
+    private func loginHandler(_ req: Request) throws -> Future<Token> {
+        let user = try req.requireAuthenticated(User.self)
+        let token = try Token.generate(for: user)
+        return token.save(on: req)
     }
 }
