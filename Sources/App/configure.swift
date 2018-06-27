@@ -76,13 +76,16 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var maxConnectionsAllowedByDBPlan = System.coreCount //default value of DatabaseConnectionPoolConfig maxConnections
     if let maxConnections = Environment.get("MAX_CONNECTIONS") {
         maxConnectionsAllowedByDBPlan = Int(maxConnections) ?? System.coreCount
+        HerokuLog("MAX CONNECTION FOR DB: \(maxConnectionsAllowedByDBPlan)")
     }
 
     let maxConnectionPerPool = maxConnectionsAllowedByDBPlan/System.coreCount
     let dbConnectionPoolConfig = DatabaseConnectionPoolConfig(maxConnections: maxConnectionPerPool)
         //DatabaseConnectionPoolConfig(maxConnections: maxConnectionPerPool)
     services.register(dbConnectionPoolConfig)
-
+    HerokuLog("Cores Count: \(System.coreCount)")
+    HerokuLog("MAX CONNECTION PER POOL: \(dbConnectionPoolConfig.maxConnections)")
+    
 
     config.prefer(LeafRenderer.self, for: ViewRenderer.self)
 }
