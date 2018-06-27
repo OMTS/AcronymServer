@@ -146,17 +146,28 @@ final class AcronymTests: XCTestCase {
         let category = try Category.create(on: conn)
         let category2 = try Category.create(name: "Funny", on: conn)
         let acronym = try Acronym.create(on: conn)
-
+        print("1")
         _ = try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)/categories/\(category.id!)", method: .POST)
         _ = try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)/categories/\(category2.id!)", method: .POST)
+        print("2")
 
         let categories = try app.getResponse(to: "\(acronymsURI)\(acronym.id!)/categories", decodeTo: [App.Category].self)
+        print("3")
 
         XCTAssertEqual(categories.count, 2)
+        print("4")
+
         XCTAssertEqual(categories[0].id, category.id)
+        print("5")
+
         XCTAssertEqual(categories[0].name, category.name)
+        print("6")
+
         XCTAssertEqual(categories[1].id, category2.id)
+        print("7")
+
         XCTAssertEqual(categories[1].name, category2.name)
+        print("8")
     }
 
     static let allTests = [
