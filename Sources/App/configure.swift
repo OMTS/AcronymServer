@@ -77,7 +77,10 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     if let maxConnections = Environment.get("MAX_CONNECTIONS") {
         maxConnectionsAllowedByDBPlan = Int(maxConnections) ?? System.coreCount
     }
-    let dbConnectionPoolConfig = DatabaseConnectionPoolConfig(maxConnections: maxConnectionsAllowedByDBPlan/System.coreCount)
+
+    let maxConnectionPerPool = maxConnectionsAllowedByDBPlan/System.coreCount
+    let dbConnectionPoolConfig = DatabaseConnectionPoolConfig(maxConnections: maxConnectionPerPool)
+        //DatabaseConnectionPoolConfig(maxConnections: maxConnectionPerPool)
     services.register(dbConnectionPoolConfig)
 
 
