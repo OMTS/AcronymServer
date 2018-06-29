@@ -67,6 +67,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: Category.self, database: .psql)
     migrations.add(model: AcronymCategoryPivot.self, database: .psql)
     migrations.add(model: Token.self, database: .psql)
+    migrations.add(migration: AdminUser.self, database: .psql)
     services.register(migrations)
 
     var commandConfig = CommandConfig.default()
@@ -76,9 +77,15 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var maxConnectionsAllowedByDBPlan = System.coreCount //default value of DatabaseConnectionPoolConfig maxConnections
     if let maxConnections = Environment.get("MAX_CONNECTIONS") {
         maxConnectionsAllowedByDBPlan = Int(maxConnections) ?? System.coreCount
+        HerokuLog("MAX CONNECTION FOR DB: \(maxConnectionsAllowedByDBPlan)")
     }
-    let dbConnectionPoolConfig = DatabaseConnectionPoolConfig(maxConnections: maxConnectionsAllowedByDBPlan/System.coreCount)
+
+    let maxConnectionPerPool = maxConnectionsAllowedByDBPlan/System.coreCount
+    let dbConnectionPoolConfig = DatabaseConnectionPoolConfig(maxConnections: maxConnectionPerPool)
     services.register(dbConnectionPoolConfig)
+
+    HerokuLog("Cores Count: \(System.coreCount)")
+    HerokuLog("MAX CONNECTION PER POOL: \(dbConnectionPoolConfig.maxConnections)")
 
 
     config.prefer(LeafRenderer.self, for: ViewRenderer.self)

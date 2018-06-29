@@ -9,27 +9,26 @@ struct AcronymsController: RouteCollection {
 
         acronymsRoutes.get(use: getAllHandler)
         acronymsRoutes.get(Acronym.parameter, use: getHandler)
-        acronymsRoutes.put(Acronym.parameter, use: updateHandler)
-        acronymsRoutes.delete(Acronym.parameter, use: deleteHandler)
         acronymsRoutes.get(Constants.Routes.search, use: searchHandler)
         acronymsRoutes.get(Constants.Routes.dsearch, use: multipleSearchHandler)
         acronymsRoutes.get(Constants.Routes.first, use: getFirstHandler)
         acronymsRoutes.get(Constants.Routes.sorted, use: sortedHandler)
-
         acronymsRoutes.get(Acronym.parameter, Constants.Routes.user, use: getUserHandler)
-        acronymsRoutes.post(Acronym.parameter,"categories", Category.parameter, use: addCategoriesHandler)
         acronymsRoutes.get(Acronym.parameter, "categories", use: getCategoriesHandler)
 
-        //POST Acronyms is using basic auth
-        let basicAuthMiddleware = User.basicAuthMiddleware(using: BCryptDigest())
+        //Using Auth Middleqare for mutating resources
+        let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let guardAuthMiddleware = User.guardAuthMiddleware()
-        let protected = acronymsRoutes.grouped(basicAuthMiddleware, guardAuthMiddleware)
-        protected.post(Acronym.self, use: createHandler)
-
+        let tokenAuthGroup = acronymsRoutes.grouped(tokenAuthMiddleware, guardAuthMiddleware)
+        tokenAuthGroup.post(AcronymCreateData.self, use: createHandler)
+        tokenAuthGroup.delete(Acronym.parameter, use: deleteHandler)
+        tokenAuthGroup.put(Acronym.parameter, use: updateHandler)
+        tokenAuthGroup.post(Acronym.parameter, "categories", Category.parameter, use: addCategoriesHandler)
     }
 
     //CRUD Handlers
     private func getAllHandler(_ req: Request) throws -> Future<[Acronym]> {
+        print(req.eventLoop)
         if let sorted = req.query[String.self, at:"sorted"] {
             if sorted == "true" {
                 return Acronym.query(on: req).sort(\.short, .ascending).all()
@@ -51,24 +50,34 @@ struct AcronymsController: RouteCollection {
         }
     }*/
 
-    private func createHandler(_ req: Request, acronym: Acronym) throws -> Future<Acronym> {
+  /*  private func createHandler(_ req: Request, acronym: Acronym) throws -> Future<Acronym> {
+        return acronym.save(on: req)
+    }*/
+
+    private func createHandler(_ req: Request, data: AcronymCreateData) throws -> Future<Acronym> {
+        let user = try req.requireAuthenticated(User.self)
+        let acronym = try Acronym(short: data.short, long: data.long, userID: user.requireID())
         return acronym.save(on: req)
     }
 
     private func getHandler(_ req: Request) throws -> Future<Acronym> {
+        //print(req.eventLoop)
         return try req.parameters.next(Acronym.self)
     }
 
     private func updateHandler(_ req: Request) throws -> Future<Acronym> {
         return try flatMap(to: Acronym.self, req.parameters.next(Acronym.self),
-                           req.content.decode(Acronym.self)) { acronym, updatedAcronym in
+                           req.content.decode(AcronymCreateData.self)) { acronym, updateData in
 
-                            acronym.short = updatedAcronym.short
-                            acronym.long = updatedAcronym.long
-                            acronym.userID = updatedAcronym.userID
+                            acronym.short = updateData.short
+                            acronym.long = updateData.long
+
+                            let user = try req.requireAuthenticated(User.self)
+                            acronym.userID = try user.requireID()
                             return acronym.save(on: req)
-        }
+            }
     }
+
 
     private func deleteHandler(_ req: Request) throws -> Future<HTTPStatus> {
         return try req.parameters.next(Acronym.self)
@@ -134,4 +143,9 @@ struct AcronymsController: RouteCollection {
                 return try acronym.categories.query(on: req).all()
         }
     }
+}
+
+struct AcronymCreateData: Content {
+    let short: String
+    let long: String
 }
