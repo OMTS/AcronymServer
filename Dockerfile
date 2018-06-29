@@ -4,5 +4,5 @@ COPY . ./
 
 RUN swift package resolve
 RUN swift package clean
-CMD ["swift", "run", "Run"]
-#CMD ["swift", "test"]
+#CMD ["swift", "run", "Run"]
+CMD ["swift", "test"]
