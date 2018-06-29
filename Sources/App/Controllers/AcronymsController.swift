@@ -28,7 +28,6 @@ struct AcronymsController: RouteCollection {
 
     //CRUD Handlers
     private func getAllHandler(_ req: Request) throws -> Future<[Acronym]> {
-        print(req.eventLoop)
         if let sorted = req.query[String.self, at:"sorted"] {
             if sorted == "true" {
                 return Acronym.query(on: req).sort(\.short, .ascending).all()
@@ -37,22 +36,6 @@ struct AcronymsController: RouteCollection {
         return Acronym.query(on: req).all()
     }
 
-   /* private func createHandler(_ req: Request) throws -> Future<Acronym> {
-        let decodedAcronym = try req.content.decode(Acronym.self)
-        return decodedAcronym.flatMap { acronym  in
-            //The next line (mutating the acronym)
-            //won't be allowed if we used a struct for Acronym
-            //Instead we would have to make a fresh copy of the acronym
-            //in order to mutate it
-
-            //acronym.short = "OMG"
-            return acronym.save(on: req)
-        }
-    }*/
-
-  /*  private func createHandler(_ req: Request, acronym: Acronym) throws -> Future<Acronym> {
-        return acronym.save(on: req)
-    }*/
 
     private func createHandler(_ req: Request, data: AcronymCreateData) throws -> Future<Acronym> {
         let user = try req.requireAuthenticated(User.self)
@@ -61,7 +44,6 @@ struct AcronymsController: RouteCollection {
     }
 
     private func getHandler(_ req: Request) throws -> Future<Acronym> {
-        //print(req.eventLoop)
         return try req.parameters.next(Acronym.self)
     }
 

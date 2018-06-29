@@ -38,12 +38,10 @@ extension Application {
             } else {
                 tokenHeaders = ["Authorization": "Basic YWRtaW46cGFzc3dvcmQ="]
             }
-            print("Login Headers:  \(tokenHeaders)")
             let tokenResponse = try self.sendRequest(to: "/api/users/login", method: .POST, headers: tokenHeaders)
             let token = try tokenResponse.content.syncDecode(Token.self)
             headers.add(name: .authorization, value: "Bearer \(token.token)")
         }
-        print("Headers: \(headers)")
 
         let responder = try self.make(Responder.self)
         let request = HTTPRequest(method: method, url: URL(string: path)!, headers: headers)
