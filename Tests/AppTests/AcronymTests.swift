@@ -37,7 +37,14 @@ final class AcronymTests: XCTestCase {
     func testAcronymCanBeSavedWithAPI() throws {
         let user = try User.create(on: conn)
         let acronym = Acronym(short: acronymShort, long: acronymLong, userID: user.id!)
-        let receivedAcronym = try app.getResponse(to: acronymsURI, method: .POST, headers: ["Content-Type": "application/json"], data: acronym, decodeTo: Acronym.self, loggedInRequest: true, loggedInUser: user)
+
+        let receivedAcronym = try app.getResponse(
+            to: acronymsURI,
+            method: .POST,
+            headers: ["Content-Type": "application/json"],
+            data: acronym,
+            decodeTo: Acronym.self,
+            loggedInRequest: true)
 
         XCTAssertEqual(receivedAcronym.short, acronymShort)
         XCTAssertEqual(receivedAcronym.long, acronymLong)
@@ -67,7 +74,12 @@ final class AcronymTests: XCTestCase {
         let newLong = "Oh My Gosh"
         let updatedAcronym = Acronym(short: acronymShort, long: newLong, userID: newUser.id!)
 
-        try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)", method: .PUT, headers: ["Content-Type": "application/json"], data: updatedAcronym)
+        try app.sendRequest(
+            to: "\(acronymsURI)\(acronym.id!)",
+            method: .PUT,
+            headers: ["Content-Type": "application/json"],
+            data: updatedAcronym,
+            loggedInUser: newUser)
 
         let returnedAcronym = try app.getResponse(to: "\(acronymsURI)\(acronym.id!)", decodeTo: Acronym.self)
 
@@ -82,7 +94,8 @@ final class AcronymTests: XCTestCase {
 
         XCTAssertEqual(acronyms.count, 1)
 
-        _ = try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)", method: .DELETE)
+        _ = try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)", method: .DELETE, loggedInRequest: true)
+
         acronyms = try app.getResponse(to: acronymsURI, decodeTo: [Acronym].self)
 
         XCTAssertEqual(acronyms.count, 0)
@@ -145,30 +158,23 @@ final class AcronymTests: XCTestCase {
     func testAcronymsCategories() throws {
         let category = try Category.create(on: conn)
         let category2 = try Category.create(name: "Funny", on: conn)
-        let acronym = try Acronym.create(on: conn)
-        print("1")
-        _ = try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)/categories/\(category.id!)", method: .POST)
-        _ = try app.sendRequest(to: "\(acronymsURI)\(acronym.id!)/categories/\(category2.id!)", method: .POST)
-        print("2")
+        let user = try User.create(on: conn)
+        let acronym = try Acronym.create(user: user, on: conn)
+        let request1URL = "\(acronymsURI)\(acronym.id!)/categories/\(category.id!)"
+        _ = try app.sendRequest(to: request1URL, method: .POST, loggedInUser: user)
+
+        let request2URL = "\(acronymsURI)\(acronym.id!)/categories/\(category2.id!)"
+        _ = try app.sendRequest(to: request2URL, method: .POST, loggedInUser: user)
 
         let categories = try app.getResponse(to: "\(acronymsURI)\(acronym.id!)/categories", decodeTo: [App.Category].self)
-        print("3")
 
         XCTAssertEqual(categories.count, 2)
-        print("4")
-
         XCTAssertEqual(categories[0].id, category.id)
-        print("5")
-
         XCTAssertEqual(categories[0].name, category.name)
-        print("6")
-
         XCTAssertEqual(categories[1].id, category2.id)
-        print("7")
-
         XCTAssertEqual(categories[1].name, category2.name)
-        print("8")
     }
+ 
 
     static let allTests = [
         ("testAcronymsCanBeRetrievedFromAPI", testAcronymsCanBeRetrievedFromAPI),
