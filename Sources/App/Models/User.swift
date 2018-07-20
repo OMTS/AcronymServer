@@ -46,6 +46,7 @@ extension User: Migration {
 extension User: Content {}
 extension User: Parameter {}
 extension User.Public: Content {}
+extension User.Public: PostgreSQLUUIDModel {}
 
 extension User {
     func convertToPublic() -> User.Public {
@@ -84,5 +85,4 @@ struct AdminUser: Migration {
     static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
         return .done(on: connection)
     }
-
 }

@@ -71,23 +71,24 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(migrations)
 
     var commandConfig = CommandConfig.default()
-    commandConfig.use(RevertCommand.self, as: "revert")
+    commandConfig.useFluentCommands()
     services.register(commandConfig)
 
+    /*
     var maxConnectionsAllowedByDBPlan = System.coreCount //default value of DatabaseConnectionPoolConfig maxConnections
     if let maxConnections = Environment.get("MAX_CONNECTIONS") {
         maxConnectionsAllowedByDBPlan = Int(maxConnections) ?? System.coreCount
         HerokuLog("MAX CONNECTION FOR DB: \(maxConnectionsAllowedByDBPlan)")
     }
 
-  /*  let maxConnectionPerPool = maxConnectionsAllowedByDBPlan/System.coreCount
+    let maxConnectionPerPool = maxConnectionsAllowedByDBPlan/System.coreCount
     let dbConnectionPoolConfig = DatabaseConnectionPoolConfig(maxConnections: maxConnectionPerPool)
     services.register(dbConnectionPoolConfig)
 
     HerokuLog("Cores Count: \(System.coreCount)")
     HerokuLog("MAX CONNECTION PER POOL: \(dbConnectionPoolConfig.maxConnections)")
+     */
 
- */
 
     config.prefer(LeafRenderer.self, for: ViewRenderer.self)
 }
